@@ -552,6 +552,40 @@ def tyre_html(compound):
     return f'<span style="background:{bg};color:{fg};border-radius:50%;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;font-family:\'Orbitron\',monospace;font-size:.55rem;font-weight:900;flex-shrink:0;">{compound}</span>'
 
 # ─── Chart: Championship points progression ───────────────────────────────────
+# ─── Spotlight card renderer — no conditionals inside f-strings ───────────────
+def spotlight_card_html(fd, info, champ_pos, champ_pts, driver_standings,
+                        t_block, RED, ORANGE, MUTED2, GREEN, GOLD, TEXT):
+    pc_champ = (GOLD if champ_pos == 1 else
+                "#A8B8C8" if champ_pos == 2 else
+                "#CD7F32" if champ_pos == 3 else MUTED2) if isinstance(champ_pos, int) else MUTED2
+
+    # Build stat boxes as a list — no conditionals in f-string
+    stat_boxes = [
+        f'<div class="fh-stat-box"><div class="fh-stat-val">{fd["pts"]}</div><div class="fh-stat-lbl">PTS TODAY</div></div>',
+        f'<div class="fh-stat-box"><div class="fh-stat-val" style="color:{pc_champ};">P{champ_pos}</div><div class="fh-stat-lbl">CHAMP POS</div></div>',
+        f'<div class="fh-stat-box"><div class="fh-stat-val">{champ_pts}</div><div class="fh-stat-lbl">TOTAL PTS</div></div>',
+    ]
+    if champ_pos != 1 and driver_standings:
+        gap = driver_standings[0]["pts"] - champ_pts
+        stat_boxes.append(f'<div class="fh-stat-box"><div class="fh-stat-val" style="color:{ORANGE};">−{gap} pts</div><div class="fh-stat-lbl">GAP LEAD</div></div>')
+    if fd.get("fl"):
+        stat_boxes.append('<div class="fh-stat-box"><div class="fh-stat-val" style="color:#A78BFA;">FL</div><div class="fh-stat-lbl">FASTEST</div></div>')
+
+    stats_html = "".join(stat_boxes)
+    flag   = info.get("flag", "")
+    num    = info.get("num", "")
+    name   = info.get("name", "")
+    pos    = fd["pos"]
+    pos_col = GOLD if pos == 1 else "#A8B8C8" if pos == 2 else "#CD7F32" if pos == 3 else TEXT
+
+    return f"""<div class="ferrari-hero">
+    <div class="fh-num">#{num}</div>
+    <div class="fh-driver">{flag} &nbsp; <span style="color:{pos_col};">P{pos}</span> &nbsp;·&nbsp; FERRARI #{num}</div>
+    <div class="fh-name">{name}</div>
+    {t_block}
+    <div class="fh-stat" style="margin-top:8px;">{stats_html}</div>
+</div>"""
+
 # ─── Telemetry card HTML builder ─────────────────────────────────────────────
 def telem_html(code, telem_data, RED, DARK, BORDER2, MUTED, MUTED2, GREEN, GOLD, ORANGE):
     t        = telem_data.get(code, {})
@@ -623,56 +657,70 @@ def main():
         ]
 
     # ── Top bar: wordmark + round selector + tifosi toggle ───────────────────
-    h1, h2, h3 = st.columns([2, 4, 1.2], gap="medium")
-    with h1:
+    # ── Top bar: two columns — left wordmark, right selector+toggle ─────────
+    last_upd = st.session_state.get("loaded_at")
+    rel      = relative_time(last_upd) if last_upd else "—"
+    tifosi   = st.session_state["tifosi"]
+
+    round_labels = [
+        f"R{r['round']} · {r['name']}  —  {r['date']}"
+        for r in season_rounds
+    ]
+
+    col_brand, col_controls = st.columns([1.6, 5], gap="medium")
+
+    with col_brand:
         st.markdown(f"""
-        <div style="display:flex;align-items:center;gap:12px;padding:6px 0;">
-            <div style="width:32px;height:32px;background:{RED};
-                        clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
-                        flex-shrink:0;"></div>
+        <div style="display:flex;align-items:center;gap:12px;height:100%;padding:4px 0;">
+            <div style="width:32px;height:32px;background:{RED};flex-shrink:0;
+                        clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);"></div>
             <div>
                 <div style="font-family:'Orbitron',monospace;font-size:1.1rem;
-                            font-weight:900;color:{RED};letter-spacing:.05em;
-                            line-height:1.1;">FERRARI</div>
+                            font-weight:900;color:{RED};letter-spacing:.05em;line-height:1.1;">FERRARI</div>
                 <div style="font-family:'Share Tech Mono',monospace;font-size:.55rem;
                             color:{MUTED};letter-spacing:.2em;">MISSION CONTROL</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-    with h2:
-        round_labels = [
-            f"R{r['round']} · {r['name']}  —  {r['date']}"
-            for r in season_rounds
-        ]
-        sel_idx = st.selectbox(
-            "SELECT RACE",
-            options=range(len(round_labels)),
-            format_func=lambda i: round_labels[i],
-            index=0,
-            key="race_sel",
-            label_visibility="visible",
-        )
+    with col_controls:
+        # Single row: selectbox + toggle + live status — all share same label row height
+        c_sel, c_tog, c_status = st.columns([4, 1.4, 1.2], gap="small")
 
-    with h3:
-        last_upd = st.session_state.get("loaded_at")
-        rel      = relative_time(last_upd) if last_upd else "—"
-        tifosi   = st.session_state["tifosi"]
-        tog_lbl  = "🔴 TIFOSI ON" if tifosi else "⚪ TIFOSI OFF"
-        # Spacer matches the SELECT RACE label height so button aligns with dropdown
-        st.markdown(
-            f'<div style="font-family:Orbitron,monospace;font-size:.6rem;'
-            f'letter-spacing:.18em;color:transparent;margin-bottom:4px;">SELECT RACE</div>',
-            unsafe_allow_html=True,
-        )
-        if st.button(tog_lbl, key="tifosi_btn", use_container_width=True):
-            st.session_state["tifosi"] = not tifosi
-            st.rerun()
-        st.markdown(
-            f'<div style="font-family:Share Tech Mono,monospace;font-size:.58rem;'
-            f'color:{MUTED};text-align:center;margin-top:4px;">◉ LIVE · {rel}</div>',
-            unsafe_allow_html=True,
-        )
+        with c_sel:
+            sel_idx = st.selectbox(
+                "SELECT RACE",
+                options=range(len(round_labels)),
+                format_func=lambda i: round_labels[i],
+                index=0,
+                key="race_sel",
+                label_visibility="visible",
+            )
+
+        with c_tog:
+            tog_lbl = "🔴 TIFOSI ON" if tifosi else "⚪ TIFOSI"
+            st.markdown(
+                f'<div style="font-family:Orbitron,monospace;font-size:.6rem;letter-spacing:.18em;color:transparent;padding-bottom:4px;">·</div>',
+                unsafe_allow_html=True,
+            )
+            if st.button(tog_lbl, key="tifosi_btn", use_container_width=True):
+                st.session_state["tifosi"] = not tifosi
+                st.rerun()
+
+        with c_status:
+            st.markdown(
+                f'<div style="font-family:Orbitron,monospace;font-size:.6rem;letter-spacing:.18em;color:transparent;padding-bottom:4px;">·</div>',
+                unsafe_allow_html=True,
+            )
+            st.markdown(f"""
+            <div style="background:{CARD};border:1px solid {BORDER2};border-radius:8px;
+                        padding:7px 10px;text-align:center;">
+                <div style="font-family:Share Tech Mono,monospace;font-size:.65rem;
+                            color:{GREEN};">◉ LIVE</div>
+                <div style="font-family:Share Tech Mono,monospace;font-size:.55rem;
+                            color:{MUTED};margin-top:1px;">{rel}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
     tifosi = st.session_state["tifosi"]
     selected = season_rounds[sel_idx]
@@ -836,44 +884,12 @@ def main():
             champ_row = next((d for d in driver_standings if d["code"] == fd["code"]), {})
             champ_pos = champ_row.get("pos", "—")
             champ_pts = champ_row.get("pts", 0)
-            # Pre-compute fragments — no conditionals inside f-strings
-            if champ_pos != 1 and driver_standings:
-                gap_val  = driver_standings[0]["pts"] - champ_pts
-                gap_frag = f'<div class="fh-stat-box"><div class="fh-stat-val" style="color:{ORANGE};">−{gap_val} pts</div><div class="fh-stat-lbl">GAP LEAD</div></div>'
-            else:
-                gap_frag = ""
-            fl_frag = '<div class="fh-stat-box"><div class="fh-stat-val" style="color:#A78BFA;">FL</div><div class="fh-stat-lbl">FASTEST</div></div>' if fd.get("fl") else ""
-            pc_champ = pos_color(champ_pos) if isinstance(champ_pos, int) else MUTED2
 
             t_block = telem_html(fd["code"], _telem, RED, DARK, BORDER2, MUTED, MUTED2, GREEN, GOLD, ORANGE)
-            st.markdown(f"""
-            <div class="ferrari-hero">
-                <div class="fh-num">#{info.get("num","")}</div>
-                <div style="display:flex;align-items:baseline;gap:10px;">
-                    <div>
-                        <div class="fh-driver">{info.get("flag","")} &nbsp; P{fd["pos"]} &nbsp;·&nbsp; FERRARI #{info.get("num","")}</div>
-                        <div class="fh-name">{info.get("name","")}</div>
-                    </div>
-                </div>
-                {t_block}
-                <div class="fh-stat" style="margin-top:8px;">
-                    <div class="fh-stat-box">
-                        <div class="fh-stat-val">{fd["pts"]}</div>
-                        <div class="fh-stat-lbl">PTS TODAY</div>
-                    </div>
-                    <div class="fh-stat-box">
-                        <div class="fh-stat-val" style="color:{pc_champ};">P{champ_pos}</div>
-                        <div class="fh-stat-lbl">CHAMP POS</div>
-                    </div>
-                    <div class="fh-stat-box">
-                        <div class="fh-stat-val">{champ_pts}</div>
-                        <div class="fh-stat-lbl">TOTAL PTS</div>
-                    </div>
-                    {gap_frag}
-                    {fl_frag}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(spotlight_card_html(
+                fd, info, champ_pos, champ_pts, driver_standings,
+                t_block, RED, ORANGE, MUTED2, GREEN, GOLD, TEXT
+            ), unsafe_allow_html=True)
 
         # Driver championship standings
         st.markdown(f'<div class="slabel" style="margin-top:6px;">👤 Driver Championship</div>',
@@ -899,14 +915,17 @@ def main():
         max_d_pts = max((d["pts"] for d in driver_standings), default=1)
 
         for d in standings_to_show[:10]:
-            is_fer  = d.get("team") == "Ferrari"
-            tc      = TEAM_COLORS.get(d.get("team",""), MUTED)
-            pc      = pos_color(d["pos"])
-            delay   = d["pos"] * 0.035
-            bar_pct = round(d["pts"] / max_d_pts * 100)
+            is_fer    = d.get("team") == "Ferrari"
+            tc        = TEAM_COLORS.get(d.get("team",""), MUTED)
+            pc        = pos_color(d["pos"])
+            delay     = d["pos"] * 0.035
+            bar_pct   = round(d["pts"] / max_d_pts * 100)
             race_pts_this = d.get("race_pts", [])
             last_race_pts = race_pts_this[-1] if race_pts_this else 0
-            lrp_html = f'<div style="font-family:Share Tech Mono,monospace;font-size:.6rem;color:{GREEN};width:28px;text-align:right;flex-shrink:0;">+{last_race_pts}</div>' if last_race_pts else '<div style="width:28px;flex-shrink:0;"></div>'
+            lrp_html  = f'<div style="font-family:Share Tech Mono,monospace;font-size:.6rem;color:{GREEN};width:28px;text-align:right;flex-shrink:0;">+{last_race_pts}</div>' if last_race_pts else '<div style="width:28px;flex-shrink:0;"></div>'
+            d_fullname = DRIVER_INFO.get(d["code"], {}).get("name", d["code"])
+            d_teamname = d.get("team", "")
+            d_namecol  = RED if is_fer else TEXT
 
             st.markdown(f"""
             <div class="drow {'is-ferrari' if is_fer else ''}"
@@ -919,9 +938,9 @@ def main():
                 <div style="flex:1;min-width:0;">
                     <div style="font-family:'Barlow Condensed',sans-serif;font-size:.92rem;
                                 font-weight:700;color:{''+RED if is_fer else TEXT};
-                                line-height:1.2;">{DRIVER_INFO.get(d["code"],{{}}).get("name", d["code"])}</div>
+                                line-height:1.2;">{d_fullname}</div>
                     <div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;
-                                color:{MUTED2};line-height:1.1;">{d.get("team","")}</div>
+                                color:{MUTED2};line-height:1.1;">{d_teamname}</div>
                     <div class="bar-track" style="margin-top:3px;">
                         <div class="bar-fill" style="width:{bar_pct}%;background:{tc};"></div>
                     </div>
@@ -988,42 +1007,12 @@ def main():
             champ_row = next((d for d in driver_standings if d["code"] == fd["code"]), {})
             champ_pos = champ_row.get("pos", "—")
             champ_pts = champ_row.get("pts", 0)
-            if champ_pos != 1 and driver_standings:
-                gap_val  = driver_standings[0]["pts"] - champ_pts
-                gap_frag = f'<div class="fh-stat-box"><div class="fh-stat-val" style="color:{ORANGE};">−{gap_val} pts</div><div class="fh-stat-lbl">GAP LEAD</div></div>'
-            else:
-                gap_frag = ""
-            fl_frag   = '<div class="fh-stat-box"><div class="fh-stat-val" style="color:#A78BFA;">FL</div><div class="fh-stat-lbl">FASTEST</div></div>' if fd.get("fl") else ""
             pc_champ  = pos_color(champ_pos) if isinstance(champ_pos, int) else MUTED2
             t_block = telem_html(fd["code"], _telem, RED, DARK, BORDER2, MUTED, MUTED2, GREEN, GOLD, ORANGE)
-            st.markdown(f"""
-            <div class="ferrari-hero">
-                <div class="fh-num">#{info.get("num","")}</div>
-                <div style="display:flex;align-items:baseline;gap:10px;">
-                    <div>
-                        <div class="fh-driver">{info.get("flag","")} &nbsp; P{fd["pos"]} &nbsp;·&nbsp; FERRARI #{info.get("num","")}</div>
-                        <div class="fh-name">{info.get("name","")}</div>
-                    </div>
-                </div>
-                {t_block}
-                <div class="fh-stat" style="margin-top:8px;">
-                    <div class="fh-stat-box">
-                        <div class="fh-stat-val">{fd["pts"]}</div>
-                        <div class="fh-stat-lbl">PTS TODAY</div>
-                    </div>
-                    <div class="fh-stat-box">
-                        <div class="fh-stat-val" style="color:{pc_champ};">P{champ_pos}</div>
-                        <div class="fh-stat-lbl">CHAMP POS</div>
-                    </div>
-                    <div class="fh-stat-box">
-                        <div class="fh-stat-val">{champ_pts}</div>
-                        <div class="fh-stat-lbl">TOTAL PTS</div>
-                    </div>
-                    {gap_frag}
-                    {fl_frag}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(spotlight_card_html(
+                fd, info, champ_pos, champ_pts, driver_standings,
+                t_block, RED, ORANGE, MUTED2, GREEN, GOLD, TEXT
+            ), unsafe_allow_html=True)
 
     # ── Footer ────────────────────────────────────────────────────────────────
     st.markdown(f"""
