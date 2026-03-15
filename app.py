@@ -69,16 +69,16 @@ GREEN_DELTA    = "#39FF14"
 ORANGE_WARN    = "#FF8C00"
 
 DRIVER_INFO = {
-    "HAM": {"name": "Lewis Hamilton",   "num": 44, "team": "Ferrari",   "nationality": "🇬🇧"},
-    "LEC": {"name": "Charles Leclerc",  "num": 16, "team": "Ferrari",   "nationality": "🇲🇨"},
-    "ANT": {"name": "Kimi Antonelli",   "num": 12, "team": "Mercedes",  "nationality": "🇮🇹"},
-    "RUS": {"name": "George Russell",   "num": 63, "team": "Mercedes",  "nationality": "🇬🇧"},
-    "VER": {"name": "Max Verstappen",   "num": 1,  "team": "Red Bull",  "nationality": "🇳🇱"},
-    "NOR": {"name": "Lando Norris",     "num": 4,  "team": "McLaren",   "nationality": "🇬🇧"},
-    "PIA": {"name": "Oscar Piastri",    "num": 81, "team": "McLaren",   "nationality": "🇦🇺"},
-    "ALO": {"name": "Fernando Alonso",  "num": 14, "team": "Aston Martin", "nationality": "🇪🇸"},
-    "SAI": {"name": "Carlos Sainz Jr.", "num": 55, "team": "Williams",  "nationality": "🇪🇸"},
-    "TSU": {"name": "Yuki Tsunoda",     "num": 22, "team": "Red Bull",  "nationality": "🇯🇵"},
+    "HAM": {"name": "Lewis Hamilton",   "num": 44, "team": "Ferrari",      "nationality": "🇬🇧", "car": "SF-26"},
+    "LEC": {"name": "Charles Leclerc",  "num": 16, "team": "Ferrari",      "nationality": "🇲🇨", "car": "SF-26"},
+    "ANT": {"name": "Kimi Antonelli",   "num": 12, "team": "Mercedes",     "nationality": "🇮🇹", "car": "W16"},
+    "RUS": {"name": "George Russell",   "num": 63, "team": "Mercedes",     "nationality": "🇬🇧", "car": "W16"},
+    "VER": {"name": "Max Verstappen",   "num": 1,  "team": "Red Bull",     "nationality": "🇳🇱", "car": "RB21"},
+    "NOR": {"name": "Lando Norris",     "num": 4,  "team": "McLaren",      "nationality": "🇬🇧", "car": "MCL39"},
+    "PIA": {"name": "Oscar Piastri",    "num": 81, "team": "McLaren",      "nationality": "🇦🇺", "car": "MCL39"},
+    "ALO": {"name": "Fernando Alonso",  "num": 14, "team": "Aston Martin", "nationality": "🇪🇸", "car": "AMR26"},
+    "SAI": {"name": "Carlos Sainz Jr.", "num": 55, "team": "Williams",     "nationality": "🇪🇸", "car": "FW47"},
+    "TSU": {"name": "Yuki Tsunoda",     "num": 22, "team": "Red Bull",     "nationality": "🇯🇵", "car": "RB21"},
 }
 
 TEAM_COLORS = {
@@ -506,16 +506,16 @@ def generate_mock_telemetry(driver_id: str, seed: int = 42):
 def generate_mock_timing(lap: int, tifosi_pin: bool = False):
     """Generate mock timing tower data."""
     base_data = [
-        {"pos": 1,  "code": "ANT", "team": "Mercedes",     "lap_time": "1:35.412", "interval": "LEADER",   "pts_gain": "+25", "tyre": "H", "stint": 21},
-        {"pos": 2,  "code": "RUS", "team": "Mercedes",     "lap_time": "1:35.589", "interval": "+1.827s",  "pts_gain": "+18", "tyre": "H", "stint": 21},
-        {"pos": 3,  "code": "HAM", "team": "Ferrari",      "lap_time": "1:35.701", "interval": "+3.214s",  "pts_gain": "+15", "tyre": "H", "stint": 18},
-        {"pos": 4,  "code": "LEC", "team": "Ferrari",      "lap_time": "1:35.834", "interval": "+5.102s",  "pts_gain": "+12", "tyre": "H", "stint": 18},
-        {"pos": 5,  "code": "NOR", "team": "McLaren",      "lap_time": "1:36.012", "interval": "+8.441s",  "pts_gain": "+10", "tyre": "M", "stint": 14},
-        {"pos": 6,  "code": "PIA", "team": "McLaren",      "lap_time": "1:36.199", "interval": "+11.20s",  "pts_gain": "+8",  "tyre": "M", "stint": 14},
-        {"pos": 7,  "code": "VER", "team": "Red Bull",     "lap_time": "1:36.544", "interval": "+18.77s",  "pts_gain": "+6",  "tyre": "H", "stint": 22},
-        {"pos": 8,  "code": "TSU", "team": "Red Bull",     "lap_time": "1:36.788", "interval": "+23.41s",  "pts_gain": "+4",  "tyre": "H", "stint": 22},
-        {"pos": 9,  "code": "ALO", "team": "Aston Martin", "lap_time": "1:37.021", "interval": "+31.88s",  "pts_gain": "+2",  "tyre": "M", "stint": 10},
-        {"pos": 10, "code": "SAI", "team": "Williams",     "lap_time": "1:37.244", "interval": "+38.12s",  "pts_gain": "+1",  "tyre": "S", "stint": 6},
+        {"pos": 1,  "code": "ANT", "team": "Mercedes",     "car": "W16",   "lap_time": "1:35.412", "interval": "LEADER",   "pts_gain": "+25", "tyre": "H", "stint": 21},
+        {"pos": 2,  "code": "RUS", "team": "Mercedes",     "car": "W16",   "lap_time": "1:35.589", "interval": "+1.827s",  "pts_gain": "+18", "tyre": "H", "stint": 21},
+        {"pos": 3,  "code": "HAM", "team": "Ferrari",      "car": "SF-26", "lap_time": "1:35.701", "interval": "+3.214s",  "pts_gain": "+15", "tyre": "H", "stint": 18},
+        {"pos": 4,  "code": "LEC", "team": "Ferrari",      "car": "SF-26", "lap_time": "1:35.834", "interval": "+5.102s",  "pts_gain": "+12", "tyre": "H", "stint": 18},
+        {"pos": 5,  "code": "NOR", "team": "McLaren",      "car": "MCL39", "lap_time": "1:36.012", "interval": "+8.441s",  "pts_gain": "+10", "tyre": "M", "stint": 14},
+        {"pos": 6,  "code": "PIA", "team": "McLaren",      "car": "MCL39", "lap_time": "1:36.199", "interval": "+11.20s",  "pts_gain": "+8",  "tyre": "M", "stint": 14},
+        {"pos": 7,  "code": "VER", "team": "Red Bull",     "car": "RB21",  "lap_time": "1:36.544", "interval": "+18.77s",  "pts_gain": "+6",  "tyre": "H", "stint": 22},
+        {"pos": 8,  "code": "TSU", "team": "Red Bull",     "car": "RB21",  "lap_time": "1:36.788", "interval": "+23.41s",  "pts_gain": "+4",  "tyre": "H", "stint": 22},
+        {"pos": 9,  "code": "ALO", "team": "Aston Martin", "car": "AMR26", "lap_time": "1:37.021", "interval": "+31.88s",  "pts_gain": "+2",  "tyre": "M", "stint": 10},
+        {"pos": 10, "code": "SAI", "team": "Williams",     "car": "FW47",  "lap_time": "1:37.244", "interval": "+38.12s",  "pts_gain": "+1",  "tyre": "S", "stint": 6},
     ]
     if tifosi_pin:
         ferrari = [r for r in base_data if r["team"] == "Ferrari"]
@@ -576,16 +576,27 @@ def fetch_season_rounds(year: int = 2026):
         ]
 
 @st.cache_data(show_spinner=False)
-def load_f1_session(year: int = 2026, round_num: int = None, event_name: str = None):
-    """Load a session by round number or event name. Defaults to latest."""
+def _load_f1_session_cached(year: int, round_num: int):
+    """Inner cached loader — keyed purely on (year, round_num) so dropdown
+    changes correctly bust the cache and trigger a fresh load."""
     try:
-        identifier = round_num if round_num is not None else (event_name or "last")
-        session = fastf1.get_session(year, identifier, "R")
+        session = fastf1.get_session(year, round_num, "R")
         session.load(telemetry=True, laps=True, weather=False)
         loaded_at = datetime.now(timezone.utc)
         return session, None, loaded_at
     except Exception as e:
         return None, str(e), None
+
+def load_f1_session(year: int = 2026, round_num: int = None, event_name: str = None):
+    """Public loader — resolves identifier then delegates to cached inner fn."""
+    if round_num is None:
+        # resolve "last" round number first so cache key is deterministic
+        try:
+            rounds = fetch_season_rounds(year)
+            round_num = rounds[0]["round"] if rounds else 1
+        except Exception:
+            round_num = 1
+    return _load_f1_session_cached(year, round_num)
 
 def get_real_telemetry(session, driver: str):
     try:
@@ -613,23 +624,57 @@ def get_session_meta(session):
         return None, []
 
 @st.cache_data(show_spinner=False)
-def get_live_standings():
-    """Pull 2026 constructor standings via FastF1 ergast wrapper if available."""
+def get_live_standings(year: int = 2026, round_num: int = None):
+    """Build constructor + driver standings for a given round.
+    Tries Ergast first; falls back to mock constants on any failure."""
     try:
         ergast = fastf1.ergast.Ergast()
-        standings = ergast.get_constructor_standings(season=2026, round="last")
-        result = []
-        for row in standings.content[0].itertuples():
-            result.append({
-                "pos":   row.position,
+        r = round_num if round_num else "last"
+        # Constructor standings
+        cs = ergast.get_constructor_standings(season=year, round=r)
+        constructors = []
+        for row in cs.content[0].itertuples():
+            constructors.append({
+                "pos":   int(row.position),
                 "team":  row.constructorName,
                 "pts":   int(row.points),
                 "color": TEAM_COLORS.get(row.constructorName, TEXT_SECONDARY),
                 "change": "",
             })
-        return result
-    except:
+        # Driver standings
+        ds = ergast.get_driver_standings(season=year, round=r)
+        drivers = []
+        for row in ds.content[0].itertuples():
+            code = getattr(row, "driverCode", None) or row.familyName[:3].upper()
+            drivers.append({
+                "pos":   int(row.position),
+                "code":  code,
+                "name":  row.familyName,
+                "team":  row.constructorName,
+                "pts":   int(row.points),
+                "color": TEAM_COLORS.get(row.constructorName, TEXT_SECONDARY),
+                "flag":  "🏁",
+                "pct":   0,  # filled below
+            })
+        # Normalise bar percentages
+        if drivers:
+            max_pts = max(d["pts"] for d in drivers) or 1
+            for d in drivers:
+                d["pct"] = round(d["pts"] / max_pts * 100)
+        return {"constructors": constructors, "drivers": drivers}
+    except Exception:
         return None
+
+def get_standings_for_round(round_num: int):
+    """Public helper — returns standings dict, always non-None."""
+    live = get_live_standings(year=2026, round_num=round_num)
+    if live and live.get("constructors") and live.get("drivers"):
+        return live
+    # Robust mock fallback
+    return {
+        "constructors": CONSTRUCTOR_STANDINGS,
+        "drivers":      generate_driver_standings(tifosi_pin=False),
+    }
 
 # ─── Plotly Chart: Battle Trace ───────────────────────────────────────────────
 def render_battle_trace(ham_tel, ant_tel, lap_num):
@@ -690,7 +735,7 @@ def render_battle_trace(ham_tel, ant_tel, lap_num):
 
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor=f"{DARK_BG}",
+        plot_bgcolor=DARK_BG,
         font=dict(family="Rajdhani", color=TEXT_SECONDARY),
         title=dict(
             text=f"⚡ Battle Trace · Lap {lap_num} · HAM vs ANT",
@@ -698,16 +743,14 @@ def render_battle_trace(ham_tel, ant_tel, lap_num):
             x=0.01,
         ),
         xaxis=dict(
-            title="Track Position (m)",
+            title=dict(text="Track Position (m)", font=dict(family="Share Tech Mono", size=10)),
             gridcolor=BORDER_SUBTLE, gridwidth=1,
             zeroline=False, color=TEXT_SECONDARY,
-            titlefont=dict(family="Share Tech Mono", size=10),
         ),
         yaxis=dict(
-            title="Speed (km/h)",
+            title=dict(text="Speed (km/h)", font=dict(family="Share Tech Mono", size=10)),
             gridcolor=BORDER_SUBTLE, gridwidth=1,
             zeroline=False, color=TEXT_SECONDARY,
-            titlefont=dict(family="Share Tech Mono", size=10),
         ),
         legend=dict(
             font=dict(family="Share Tech Mono", size=10, color=TEXT_SECONDARY),
@@ -829,8 +872,10 @@ def render_pedal_trace(ham_tel, ant_tel):
         fig.update_yaxes(gridcolor=BORDER_SUBTLE, zeroline=False, row=row, col=1,
                          range=[0, 105], tickfont=dict(size=9))
 
-    fig.update_xaxes(title_text="Distance (m)", row=2, col=1,
-                     titlefont=dict(family="Share Tech Mono", size=10))
+    fig.update_xaxes(
+        title=dict(text="Distance (m)", font=dict(family="Share Tech Mono", size=10)),
+        row=2, col=1
+    )
     fig.update_yaxes(title_text="Throttle %", row=1, col=1)
     fig.update_yaxes(title_text="Brake %",    row=2, col=1)
     return fig
@@ -1021,14 +1066,15 @@ def main():
         with st.spinner(f"📡 Loading R{selected_round['round']} · {selected_round['name']}..."):
             session_data, err, session_loaded_at = load_f1_session(round_num=selected_round["round"])
             if err:
-                st.info(f"Session data not yet available for this round. Showing estimated data.")
+                st.info(f"Session data not yet available for this round — showing estimated data.")
             else:
                 real_total, _ = get_session_meta(session_data)
                 if real_total:
                     total_laps = real_total
-                live_standings = get_live_standings()
                 if session_loaded_at:
                     st.session_state["session_loaded_at"] = session_loaded_at
+            # Always fetch standings (handles its own fallback)
+            live_standings = get_standings_for_round(selected_round["round"])
 
     # ── Sidebar ──────────────────────────────────────────────────────────────
     tifosi = render_sidebar(st.session_state.tifosi_mode, total_laps)
@@ -1091,12 +1137,19 @@ def main():
 
     st.markdown("<hr style='border-color:#2A2F3A; margin: 4px 0 16px;'>", unsafe_allow_html=True)
 
-    # ── Load telemetry ────────────────────────────────────────────────────────
+    # ── Load telemetry — always guaranteed non-None ──────────────────────────
     ham_tel = ant_tel = None
     if session_data:
         ham_tel = get_real_telemetry(session_data, "HAM")
         ant_tel = get_real_telemetry(session_data, "ANT")
+        # Try ANT first, fallback to any Mercedes driver if ANT not in session
+        if ant_tel is None:
+            for rival in ["ANT", "RUS", "VER", "NOR"]:
+                ant_tel = get_real_telemetry(session_data, rival)
+                if ant_tel is not None:
+                    break
 
+    # Guaranteed non-None fallback — charts never receive empty data
     if ham_tel is None:
         ham_tel = generate_mock_telemetry("HAM", seed=44)
     if ant_tel is None:
@@ -1117,11 +1170,12 @@ def main():
         <div style="display:flex; font-family:'Share Tech Mono',monospace; 
                     font-size:0.6rem; color:{TEXT_SECONDARY}; 
                     padding: 0 12px 4px; letter-spacing:0.08em;">
-            <span style="width:28px;">POS</span>
-            <span style="width:40px;">DRV</span>
+            <span style="width:26px;">POS</span>
+            <span style="width:38px;">DRV</span>
+            <span style="width:52px;">CAR</span>
             <span style="flex:1;">INTERVAL</span>
-            <span style="width:45px; text-align:right;">PTS</span>
-            <span style="width:35px; text-align:center;">TYR</span>
+            <span style="width:40px; text-align:right;">PTS</span>
+            <span style="width:30px; text-align:center;">TYR</span>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1137,28 +1191,33 @@ def main():
             tyre_bg     = tyre_colors.get(row["tyre"], TEXT_SECONDARY)
             tyre_txt    = "#111" if row["tyre"] in ("H", "M") else "white"
 
+            car_name = row.get("car") or DRIVER_INFO.get(row["code"], {}).get("car", "—")
             st.markdown(f"""
             <div class="timing-row {row_class}">
-                <span style="width:28px; font-family:'Orbitron',monospace; 
+                <span style="width:26px; font-family:'Orbitron',monospace; 
                              font-size:0.75rem; color:{pos_color}; font-weight:700;">
                     {row['pos']}
                 </span>
-                <span style="width:40px; font-weight:700; 
+                <span style="width:38px; font-weight:700; 
                              color:{name_color}; font-size:0.85rem;">
                     {row['code']}
+                </span>
+                <span style="width:52px; font-family:'Share Tech Mono',monospace;
+                             font-size:0.68rem; color:{team_color}; letter-spacing:.03em;">
+                    {car_name}
                 </span>
                 <span style="flex:1; color:{TEXT_SECONDARY}; font-size:0.75rem;">
                     {row['interval']}
                 </span>
-                <span style="width:45px; text-align:right; 
+                <span style="width:40px; text-align:right; 
                              color:{GREEN_DELTA}; font-size:0.75rem; font-weight:700;">
                     {row['pts_gain']}
                 </span>
-                <span style="width:35px; text-align:center;">
+                <span style="width:30px; text-align:center;">
                     <span style="background:{tyre_bg}; color:{tyre_txt}; 
                                  border-radius:50%; display:inline-block;
-                                 width:20px; height:20px; line-height:20px; 
-                                 font-family:'Orbitron',monospace; font-size:0.6rem;
+                                 width:18px; height:18px; line-height:18px; 
+                                 font-family:'Orbitron',monospace; font-size:0.55rem;
                                  font-weight:900;">
                         {row['tyre']}
                     </span>
@@ -1188,22 +1247,81 @@ def main():
 
     # ── Module B: Charts ──────────────────────────────────────────────────────
     with col_right:
-        tab1, tab2, tab3 = st.tabs(["⚡ Battle Trace", "🎮 Pedal Trace", "🏆 Championship"])
+        tab_champ, tab_battle, tab_pedal = st.tabs(["🏆 Championship", "⚡ Battle Trace", "🎮 Pedal Trace"])
 
-        with tab1:
+        # ── Tab 1: Championship (default / first) ─────────────────────────────
+        with tab_champ:
+            round_label = f"After R{selected_round['round']} · {selected_round['name']}"
+            hist_note   = "" if is_latest else f" <span style='color:{ORANGE_WARN}'>◈ Historic</span>"
+            st.markdown(
+                f'''<div style="font-family:Share Tech Mono,monospace; font-size:0.7rem;
+color:{TEXT_SECONDARY}; margin-bottom:8px; padding:5px 8px; background:{CARD_BG};
+border-radius:4px; border-left:3px solid {FERRARI_RED};">
+📊 Standings {round_label}{hist_note}</div>''',
+                unsafe_allow_html=True,
+            )
+
+            constructor_data = live_standings.get("constructors", CONSTRUCTOR_STANDINGS)
+            st.plotly_chart(
+                render_constructor_chart(constructor_data),
+                use_container_width=True,
+                config={"displayModeBar": False},
+            )
+
+            st.markdown(
+                f'<div class="section-header" style="margin-top:8px;">👤 Driver Standings · 2026</div>',
+                unsafe_allow_html=True,
+            )
+
+            raw_drivers = live_standings.get("drivers") or generate_driver_standings(tifosi_pin=False)
+            if tifosi:
+                ferrari_d = [d for d in raw_drivers if d.get("team") == "Ferrari"]
+                others_d  = [d for d in raw_drivers if d.get("team") != "Ferrari"]
+                for i, d in enumerate(ferrari_d): d["pos"] = i + 1
+                for i, d in enumerate(others_d):  d["pos"] = len(ferrari_d) + i + 1
+                raw_drivers = ferrari_d + others_d
+            max_pts = max((d["pts"] for d in raw_drivers), default=1)
+
+            for d in raw_drivers[:10]:
+                tc         = TEAM_COLORS.get(d.get("team", ""), TEXT_SECONDARY)
+                is_ferrari = d.get("team") == "Ferrari"
+                pos_cls    = {1: "p1", 2: "p2", 3: "p3"}.get(d["pos"], "")
+                bar_pct    = round(d["pts"] / max_pts * 100)
+                name_col   = FERRARI_RED if is_ferrari else TEXT_PRIMARY
+                left_bdr   = f"border-left:3px solid {FERRARI_RED};" if is_ferrari else ""
+                st.markdown(f"""
+                <div class="champ-badge" style="{left_bdr}">
+                    <div class="champ-pos {pos_cls}">{d['pos']}</div>
+                    <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+                                width:28px;color:{TEXT_SECONDARY};">{d.get('flag','🏁')}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-family:'Orbitron',monospace;font-size:0.8rem;
+                                    font-weight:700;color:{name_col};">{d['code']}</div>
+                        <div style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;
+                                    color:{TEXT_SECONDARY};">{d.get('team','')}</div>
+                        <div class="champ-bar-track" style="margin-top:3px;">
+                            <div style="width:{bar_pct}%;height:100%;
+                                        background:{tc};border-radius:3px;"></div>
+                        </div>
+                    </div>
+                    <div style="font-family:'Orbitron',monospace;font-size:0.85rem;
+                                font-weight:700;color:{TEXT_PRIMARY};
+                                width:40px;text-align:right;">{d['pts']}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+        # ── Tab 2: Battle Trace ───────────────────────────────────────────────
+        with tab_battle:
             st.plotly_chart(
                 render_battle_trace(ham_tel, ant_tel, lap),
                 use_container_width=True,
                 config={"displayModeBar": False},
             )
-
-            # Speed delta summary
-            dist_c = np.linspace(0, 5451, 400)
-            ham_s = np.interp(dist_c, ham_tel["Distance"], ham_tel["Speed"])
-            ant_s = np.interp(dist_c, ant_tel["Distance"], ant_tel["Speed"])
+            dist_c    = np.linspace(0, ham_tel["Distance"].max(), 400)
+            ham_s     = np.interp(dist_c, ham_tel["Distance"], ham_tel["Speed"])
+            ant_s     = np.interp(dist_c, ant_tel["Distance"], ant_tel["Speed"])
             delta_avg = ham_s.mean() - ant_s.mean()
             delta_max = (ham_s - ant_s).max()
-            delta_min = (ham_s - ant_s).min()
 
             d1, d2, d3, d4 = st.columns(4)
             with d1:
@@ -1211,74 +1329,17 @@ def main():
             with d2:
                 st.metric("ANT Avg Speed", f"{ant_s.mean():.0f} km/h")
             with d3:
-                color = "normal" if delta_avg >= 0 else "inverse"
                 st.metric("HAM Delta", f"{delta_avg:+.1f} km/h")
             with d4:
                 st.metric("Max HAM Adv", f"+{delta_max:.0f} km/h")
 
-        with tab2:
+        # ── Tab 3: Pedal Trace ────────────────────────────────────────────────
+        with tab_pedal:
             st.plotly_chart(
                 render_pedal_trace(ham_tel, ant_tel),
                 use_container_width=True,
                 config={"displayModeBar": False},
             )
-
-        with tab3:
-            # Round context banner
-            round_label = f"After R{selected_round['round']} · {selected_round['name']}"
-            hist_note   = "" if is_latest else f" <span style='color:{ORANGE_WARN}'>◈ Historic</span>"
-            st.markdown(
-                f'<div style="font-family:Share Tech Mono,monospace; font-size:0.7rem; color:{TEXT_SECONDARY}; margin-bottom:8px; padding:5px 8px; background:{CARD_BG}; border-radius:4px; border-left:3px solid {FERRARI_RED};">📊 Standings {round_label}{hist_note}</div>',
-                unsafe_allow_html=True,
-            )
-
-            # Use live standings for constructor chart if available
-            constructor_data = live_standings if live_standings else CONSTRUCTOR_STANDINGS
-            st.plotly_chart(
-                render_constructor_chart(constructor_data),
-                use_container_width=True,
-                config={"displayModeBar": False},
-            )
-
-            st.markdown(f'<div class="section-header" style="margin-top:8px;">👤 Driver Standings · 2026</div>',
-                        unsafe_allow_html=True)
-
-            drivers = generate_driver_standings(tifosi_pin=tifosi)
-            max_pts = max(d["pts"] for d in drivers)
-
-            for d in drivers[:8]:
-                team_color = TEAM_COLORS.get(d["team"], TEXT_SECONDARY)
-                is_ferrari = d["team"] == "Ferrari"
-                pos_cls    = {1: "p1", 2: "p2", 3: "p3"}.get(d["pos"], "")
-                bar_pct    = (d["pts"] / max_pts) * 100
-
-                st.markdown(f"""
-                <div class="champ-badge" style="{'border-left: 3px solid ' + FERRARI_RED + ';' if is_ferrari else ''}">
-                    <div class="champ-pos {pos_cls}">{d['pos']}</div>
-                    <div style="font-family:'Share Tech Mono',monospace; font-size:0.7rem; 
-                                width:30px; color:{TEXT_SECONDARY};">
-                        {d['flag']}
-                    </div>
-                    <div style="flex:1; min-width:0;">
-                        <div style="font-family:'Orbitron',monospace; font-size:0.8rem; 
-                                    font-weight:700; color:{''+FERRARI_RED if is_ferrari else TEXT_PRIMARY};">
-                            {d['code']}
-                        </div>
-                        <div class="champ-bar-track" style="margin-top:4px;">
-                            <div style="width:{bar_pct:.0f}%; height:100%; 
-                                        background:{team_color}; border-radius:3px;"></div>
-                        </div>
-                    </div>
-                    <div style="font-family:'Orbitron',monospace; font-size:0.85rem; 
-                                font-weight:700; color:{TEXT_PRIMARY}; width:40px; text-align:right;">
-                        {d['pts']}
-                    </div>
-                    <div style="font-family:'Share Tech Mono',monospace; font-size:0.6rem; 
-                                color:{TEXT_SECONDARY}; width:60px; text-align:right;">
-                        {d['team']}
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
 
     # ── Bottom: Gap to Leader mini-chart ─────────────────────────────────────
     st.markdown("<hr style='border-color:#2A2F3A; margin: 16px 0;'>", unsafe_allow_html=True)
