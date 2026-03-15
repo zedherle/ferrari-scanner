@@ -1,0 +1,11 @@
+# Scuderia Ferrari Mission Control — Dependencies
+# ─────────────────────────────────────────────────
+# Core
+streamlit>=1.35.0
+fastf1>=3.4.0
+plotly>=5.22.0
+pandas>=2.0.0
+numpy>=1.26.0
+
+# Optional — enhance FastF1 caching performance
+requests-cache>=1.2.0
