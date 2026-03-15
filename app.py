@@ -775,218 +775,215 @@ def main():
     # Ferrari drivers from standings
     ferrari_drivers = [d for d in driver_standings if d.get("team") == "Ferrari"]
 
-    # ── LAYOUT: 3 columns ─────────────────────────────────────────────────────
-    # Col 1: Race hero + result
-    # Col 2: Driver championship | Constructor championship (side by side)
-    # Col 3: Ferrari Spotlight cards
-    col_left, col_mid, col_right = st.columns([1.15, 1.6, 1.25], gap="medium")
+    # ─────────────────────────────────────────────────────────────────────────
+    # LAYOUT
+    # Row 1 (full width): Race hero banner
+    # Row 2 (3 cols):
+    #   Col A: Race result table
+    #   Col B: Drivers | Constructors side-by-side
+    #   Col C: Ferrari Spotlight
+    # ─────────────────────────────────────────────────────────────────────────
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # COL 1: Race info + standings
-    # ══════════════════════════════════════════════════════════════════════════
-    with col_left:
-        flag_emoji = country_flag(selected.get("country", ""))
-        status_cls = "live" if selected["status"] == "live" else "finished"
-        status_txt = "LIVE" if selected["status"] == "live" else "RACE ENDED"
+    flag_emoji = country_flag(selected.get("country", ""))
+    status_cls = "live" if selected["status"] == "live" else "finished"
+    status_txt = "LIVE" if selected["status"] == "live" else "RACE ENDED"
 
-        st.markdown(f"""
-        <div class="race-hero">
-            <div class="rh-flag">{flag_emoji}</div>
-            <div style="flex:1;min-width:0;">
-                <div class="rh-round">ROUND {selected["round"]} · 2026</div>
-                <div class="rh-name">{selected["name"].upper()}</div>
-                <div class="rh-meta">📍 {selected["location"]} &nbsp;·&nbsp; 🗓 {selected["date"]}</div>
+    # ── Row 1: Full-width race hero ───────────────────────────────────────────
+    if selected["status"] == "live":
+        pct      = round((race_laps / total_laps_r) * 100) if total_laps_r else 0
+        lap_html = f'''<div class="lap-bar" style="margin-top:10px;">
+            <div class="lb-lbl">LAP</div>
+            <div class="lb-num">{race_laps}</div>
+            <div class="lb-track"><div class="lb-fill" style="width:{pct}%"></div></div>
+            <div class="lb-lbl">/ {total_laps_r}</div>
+            <div class="lb-lbl">{pct}%</div>
+        </div>'''
+    else:
+        lap_html = f'''<div class="lap-bar" style="margin-top:10px;">
+            <div class="lb-track"><div class="lb-fill" style="width:100%"></div></div>
+            <div class="lb-ended">✓ COMPLETED · {total_laps_r} LAPS</div>
+        </div>'''
+
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,{CARD} 0%,{CARD2} 100%);
+                border:1px solid {BORDER2};border-radius:14px;padding:20px 28px;
+                margin-bottom:16px;display:flex;align-items:center;gap:24px;
+                position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;
+                    background:linear-gradient(90deg,{RED},transparent);"></div>
+        <div style="font-size:3.2rem;line-height:1;flex-shrink:0;">{flag_emoji}</div>
+        <div style="flex:1;min-width:0;">
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.62rem;
+                        color:{MUTED2};letter-spacing:.18em;">ROUND {selected["round"]} · 2026 FIA FORMULA ONE</div>
+            <div style="font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:900;
+                        color:{TEXT};letter-spacing:.04em;margin:2px 0;">{selected["name"].upper()}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.95rem;color:{MUTED2};">
+                📍 {selected["location"]} &nbsp;·&nbsp; 🗓 {selected["date"]}
             </div>
-            <div><div class="spill {status_cls}"><div class="dot"></div>{status_txt}</div></div>
+            {lap_html}
         </div>
-        """, unsafe_allow_html=True)
+        <div style="flex-shrink:0;">
+            <div class="spill {status_cls}"><div class="dot"></div>{status_txt}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-        if selected["status"] == "live":
-            pct = round((race_laps / total_laps_r) * 100) if total_laps_r else 0
-            st.markdown(f"""
-            <div class="lap-bar">
-                <div class="lb-lbl">LAP</div>
-                <div class="lb-num">{race_laps}</div>
-                <div class="lb-track"><div class="lb-fill" style="width:{pct}%"></div></div>
-                <div class="lb-lbl">/ {total_laps_r}</div>
-                <div class="lb-lbl">{pct}%</div>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <div class="lap-bar">
-                <div class="lb-track"><div class="lb-fill" style="width:100%"></div></div>
-                <div class="lb-ended">✓ COMPLETED · {total_laps_r} LAPS</div>
-            </div>
-            """, unsafe_allow_html=True)
+    # ── Row 2: Three columns ──────────────────────────────────────────────────
+    col_a, col_b, col_c = st.columns([1.1, 1.7, 1.2], gap="medium")
 
+    # ══ COL A: Race result ═══════════════════════════════════════════════════
+    with col_a:
         st.markdown(f'<div class="slabel">🏁 Race Result</div>', unsafe_allow_html=True)
         st.markdown(f"""
-        <div style="display:flex;font-family:'Share Tech Mono',monospace;
-                    font-size:.6rem;color:{MUTED};padding:0 14px 4px;letter-spacing:.07em;">
-            <span style="width:26px;">POS</span>
-            <span style="width:150px;">DRIVER</span>
-            <span style="flex:1;">TEAM</span>
-            <span style="width:48px;text-align:right;">GAP</span>
-            <span style="width:30px;text-align:right;">PTS</span>
+        <div style="display:flex;font-family:'Share Tech Mono',monospace;font-size:.58rem;
+                    color:{MUTED};padding:0 10px 4px;letter-spacing:.06em;">
+            <span style="width:24px;">POS</span>
+            <span style="flex:1;">DRIVER</span>
+            <span style="width:44px;text-align:right;">GAP</span>
+            <span style="width:26px;text-align:right;">PTS</span>
         </div>
         """, unsafe_allow_html=True)
 
         for row in race_results:
-            is_fer   = row["team"] == "Ferrari"
-            is_p1    = row["pos"] == 1
-            row_cls  = "is-ferrari" if is_fer else ("is-p1" if is_p1 else "")
-            pc       = pos_color(row["pos"])
-            nc       = RED if is_fer else TEXT
-            tc       = TEAM_COLORS.get(row["team"], MUTED2)
-            gap_col  = GOLD if row["gap"] == "WINNER" else MUTED2
-            fl_badge = '<span style="font-family:Share Tech Mono,monospace;font-size:.5rem;color:#A78BFA;background:rgba(167,139,250,.15);border-radius:3px;padding:0 3px;margin-left:3px;">FL</span>' if row.get("fl") else ""
+            is_fer    = row["team"] == "Ferrari"
+            is_p1     = row["pos"] == 1
+            row_cls   = "is-ferrari" if is_fer else ("is-p1" if is_p1 else "")
+            pc        = pos_color(row["pos"])
+            nc        = RED if is_fer else TEXT
+            tc        = TEAM_COLORS.get(row["team"], MUTED2)
+            gap_col   = GOLD if row["gap"] == "WINNER" else MUTED2
             full_name = DRIVER_INFO.get(row["code"], {}).get("name", row["code"])
-            delay    = row["pos"] * 0.03
+            delay     = row["pos"] * 0.025
+            fl_str    = '<span style="font-size:.5rem;color:#A78BFA;background:rgba(167,139,250,.15);border-radius:3px;padding:0 3px;margin-left:3px;font-family:Share Tech Mono,monospace;">FL</span>' if row.get("fl") else ""
+            # Build team line separately to avoid conditional in f-string
+            team_line = f'<div style="font-family:Barlow Condensed,sans-serif;font-size:.65rem;color:{tc};">{row["team"]}</div>'
             st.markdown(f"""
-            <div class="trow {row_cls}" style="animation-delay:{delay:.2f}s">
-                <span style="width:26px;font-family:'Orbitron',monospace;font-size:.8rem;font-weight:900;color:{pc};">{row["pos"]}</span>
-                <div style="width:150px;flex-shrink:0;">
-                    <div style="font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:700;color:{nc};line-height:1.2;">{full_name}</div>
+            <div class="trow {row_cls}" style="animation-delay:{delay:.2f}s;padding:5px 10px;">
+                <span style="width:24px;font-family:'Orbitron',monospace;font-size:.78rem;
+                             font-weight:900;color:{pc};">{row["pos"]}</span>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-size:.9rem;
+                                font-weight:700;color:{nc};line-height:1.15;">{full_name}{fl_str}</div>
+                    {team_line}
                 </div>
-                <span style="flex:1;font-size:.8rem;color:{tc};font-family:'Barlow Condensed',sans-serif;">{row["team"]}{fl_badge}</span>
-                <span style="width:48px;text-align:right;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:{gap_col};">{row["gap"]}</span>
-                <span style="width:30px;text-align:right;font-family:'Orbitron',monospace;font-size:.8rem;font-weight:700;color:{GREEN};">{row["pts"]}</span>
+                <span style="width:44px;text-align:right;font-family:'Share Tech Mono',monospace;
+                             font-size:.68rem;color:{gap_col};">{row["gap"]}</span>
+                <span style="width:26px;text-align:right;font-family:'Orbitron',monospace;
+                             font-size:.78rem;font-weight:700;color:{GREEN};">{row["pts"]}</span>
             </div>
             """, unsafe_allow_html=True)
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # COL 2: Driver championship + Constructor championship side by side
-    # ══════════════════════════════════════════════════════════════════════════
-    with col_mid:
-        sub_drv, sub_con = st.columns([1, 1], gap="small")
+    # ══ COL B: Drivers + Constructors side-by-side ═══════════════════════════
+    with col_b:
+        sub_d, sub_c = st.columns([1, 1], gap="small")
 
-        # ── Driver Championship ───────────────────────────────────────────────
-        with sub_drv:
+        # Driver standings — sorted by rank, no tifosi pin
+        with sub_d:
             st.markdown(f'<div class="slabel">👤 Drivers</div>', unsafe_allow_html=True)
-
-            standings_to_show = driver_standings
-            if tifosi:
-                ferrari_d = [d for d in driver_standings if d.get("team") == "Ferrari"]
-                others_d  = [d for d in driver_standings if d.get("team") != "Ferrari"]
-                standings_to_show = ferrari_d + others_d
-
-            max_d_pts = max((d["pts"] for d in driver_standings), default=1)
-
-            for d in standings_to_show[:10]:
-                is_fer     = d.get("team") == "Ferrari"
-                tc         = TEAM_COLORS.get(d.get("team",""), MUTED)
-                pc         = pos_color(d["pos"])
-                bar_pct    = round(d["pts"] / max_d_pts * 100)
-                d_fullname = DRIVER_INFO.get(d["code"], {}).get("name", d["code"])
-                d_teamname = d.get("team", "")
-                race_pts_this = d.get("race_pts", [])
-                last_race_pts = race_pts_this[-1] if race_pts_this else 0
-                lrp_html   = f'<span style="font-family:Share Tech Mono,monospace;font-size:.58rem;color:{GREEN};flex-shrink:0;">+{last_race_pts}</span>' if last_race_pts else ""
-                left_bdr   = f"border-left:3px solid {RED};" if is_fer else ""
-                bg_grad    = f"background:linear-gradient(90deg,rgba(239,26,45,.08) 0%,{SURFACE} 50%);" if is_fer else ""
-                name_col   = RED if is_fer else TEXT
-
+            max_d = max((d["pts"] for d in driver_standings), default=1)
+            for d in driver_standings[:10]:
+                is_fer  = d.get("team") == "Ferrari"
+                tc      = TEAM_COLORS.get(d.get("team",""), MUTED)
+                pc      = pos_color(d["pos"])
+                bp      = round(d["pts"] / max_d * 100)
+                fn      = DRIVER_INFO.get(d["code"], {}).get("name", d["code"])
+                tm      = d.get("team","")
+                lb      = f"border-left:3px solid {RED};" if is_fer else ""
+                bg      = f"background:linear-gradient(90deg,rgba(239,26,45,.07) 0%,{SURFACE} 55%);" if is_fer else f"background:{SURFACE};"
+                nc      = RED if is_fer else TEXT
+                rpts    = d.get("race_pts",[])
+                last_p  = rpts[-1] if rpts else 0
+                # Pre-build last-race pts badge
+                lbadge  = f'<div style="font-family:Share Tech Mono,monospace;font-size:.55rem;color:{GREEN};">+{last_p}</div>' if last_p else '<div style="height:14px;"></div>'
                 st.markdown(f"""
-                <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;
-                            margin-bottom:3px;border-radius:7px;background:{SURFACE};
-                            border:1px solid {BORDER};{left_bdr}{bg_grad}">
-                    <div style="font-family:'Orbitron',monospace;font-size:.85rem;font-weight:900;
-                                color:{pc};width:20px;text-align:center;flex-shrink:0;">{d["pos"]}</div>
-                    <div style="flex:1;min-width:0;">
-                        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.88rem;
-                                    font-weight:700;color:{name_col};line-height:1.15;">{d_fullname}</div>
-                        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;
-                                    color:{MUTED2};">{d_teamname}</div>
-                        <div style="height:3px;background:{BORDER2};border-radius:2px;overflow:hidden;margin-top:2px;">
-                            <div style="width:{bar_pct}%;height:100%;background:{tc};border-radius:2px;"></div>
+                <div style="display:flex;align-items:center;gap:5px;padding:5px 7px;
+                            margin-bottom:3px;border-radius:6px;border:1px solid {BORDER};{lb}{bg}">
+                    <div style="font-family:'Orbitron',monospace;font-size:.8rem;font-weight:900;
+                                color:{pc};width:18px;text-align:center;flex-shrink:0;">{d["pos"]}</div>
+                    <div style="flex:1;min-width:0;overflow:hidden;">
+                        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.85rem;
+                                    font-weight:700;color:{nc};white-space:nowrap;overflow:hidden;
+                                    text-overflow:ellipsis;">{fn}</div>
+                        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.62rem;color:{MUTED2};">{tm}</div>
+                        <div style="height:3px;background:{BORDER2};border-radius:2px;margin-top:2px;overflow:hidden;">
+                            <div style="width:{bp}%;height:100%;background:{tc};border-radius:2px;"></div>
                         </div>
                     </div>
-                    <div style="text-align:right;flex-shrink:0;">
-                        <div style="font-family:'Orbitron',monospace;font-size:.85rem;font-weight:700;color:{TEXT};">{d["pts"]}</div>
-                        {lrp_html}
+                    <div style="text-align:right;flex-shrink:0;min-width:28px;">
+                        <div style="font-family:'Orbitron',monospace;font-size:.82rem;font-weight:700;color:{TEXT};">{d["pts"]}</div>
+                        {lbadge}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-        # ── Constructor Championship ──────────────────────────────────────────
-        with sub_con:
+        # Constructor standings
+        with sub_c:
             st.markdown(f'<div class="slabel">🏗 Constructors</div>', unsafe_allow_html=True)
-
-            max_t_pts = max((t["pts"] for t in team_standings), default=1)
-
+            max_t = max((t["pts"] for t in team_standings), default=1)
             for t in team_standings:
-                is_fer    = t["team"] == "Ferrari"
-                tc        = TEAM_COLORS.get(t["team"], MUTED)
-                pc        = pos_color(t["pos"])
-                bar_pct   = round(t["pts"] / max_t_pts * 100)
-                left_bdr  = f"border-left:3px solid {RED};" if is_fer else ""
-                bg_grad   = f"background:linear-gradient(90deg,rgba(239,26,45,.08) 0%,{SURFACE} 50%);" if is_fer else ""
-                name_col  = RED if is_fer else TEXT
+                is_fer  = t["team"] == "Ferrari"
+                tc      = TEAM_COLORS.get(t["team"], MUTED)
+                pc      = pos_color(t["pos"])
+                bp      = round(t["pts"] / max_t * 100)
+                lb      = f"border-left:3px solid {RED};" if is_fer else ""
+                bg      = f"background:linear-gradient(90deg,rgba(239,26,45,.07) 0%,{SURFACE} 55%);" if is_fer else f"background:{SURFACE};"
+                nc      = RED if is_fer else TEXT
+                # Gap: build as separate variable, never interpolate conditionally
+                gap_str = ""
                 if t["pos"] > 1:
-                    gap_val  = team_standings[0]["pts"] - t["pts"]
-                    gap_html = f'<div style="font-family:Share Tech Mono,monospace;font-size:.55rem;color:{ORANGE};">−{gap_val}</div>'
-                else:
-                    gap_html = ""
-
+                    gv      = team_standings[0]["pts"] - t["pts"]
+                    gap_str = f'<div style="font-family:Share Tech Mono,monospace;font-size:.55rem;color:{ORANGE};">−{gv}</div>'
                 st.markdown(f"""
-                <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;
-                            margin-bottom:3px;border-radius:7px;background:{SURFACE};
-                            border:1px solid {BORDER};{left_bdr}{bg_grad}">
-                    <div style="font-family:'Orbitron',monospace;font-size:.85rem;font-weight:900;
-                                color:{pc};width:20px;text-align:center;flex-shrink:0;">{t["pos"]}</div>
-                    <div style="width:9px;height:9px;border-radius:50%;background:{tc};flex-shrink:0;"></div>
+                <div style="display:flex;align-items:center;gap:5px;padding:5px 7px;
+                            margin-bottom:3px;border-radius:6px;border:1px solid {BORDER};{lb}{bg}">
+                    <div style="font-family:'Orbitron',monospace;font-size:.8rem;font-weight:900;
+                                color:{pc};width:18px;text-align:center;flex-shrink:0;">{t["pos"]}</div>
+                    <div style="width:8px;height:8px;border-radius:50%;background:{tc};flex-shrink:0;"></div>
                     <div style="flex:1;min-width:0;">
-                        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.88rem;
-                                    font-weight:700;color:{name_col};line-height:1.15;">{t["team"]}</div>
-                        <div style="height:3px;background:{BORDER2};border-radius:2px;overflow:hidden;margin-top:4px;">
-                            <div style="width:{bar_pct}%;height:100%;background:{tc};border-radius:2px;"></div>
+                        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.85rem;
+                                    font-weight:700;color:{nc};">{t["team"]}</div>
+                        <div style="height:3px;background:{BORDER2};border-radius:2px;margin-top:4px;overflow:hidden;">
+                            <div style="width:{bp}%;height:100%;background:{tc};border-radius:2px;"></div>
                         </div>
                     </div>
-                    <div style="text-align:right;flex-shrink:0;">
-                        <div style="font-family:'Orbitron',monospace;font-size:.85rem;font-weight:700;color:{TEXT};">{t["pts"]}</div>
-                        {gap_html}
+                    <div style="text-align:right;flex-shrink:0;min-width:28px;">
+                        <div style="font-family:'Orbitron',monospace;font-size:.82rem;font-weight:700;color:{TEXT};">{t["pts"]}</div>
+                        {gap_str}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # COL 3: Ferrari Spotlight cards
-    # ══════════════════════════════════════════════════════════════════════════
-    with col_right:
+    # ══ COL C: Ferrari Spotlight ══════════════════════════════════════════════
+    with col_c:
         st.markdown(f'<div class="slabel">🔴 Ferrari Spotlight</div>', unsafe_allow_html=True)
 
-        ferrari_race = [r for r in race_results if r["team"] == "Ferrari"]
-        for fd in ferrari_race[:2]:
+        for fd in [r for r in race_results if r["team"] == "Ferrari"][:2]:
             info      = DRIVER_INFO.get(fd["code"], {})
             champ_row = next((d for d in driver_standings if d["code"] == fd["code"]), {})
             champ_pos = champ_row.get("pos", "—")
             champ_pts = champ_row.get("pts", 0)
             pc_champ  = pos_color(champ_pos) if isinstance(champ_pos, int) else MUTED2
-            num       = info.get("num", "")
-            flag      = info.get("flag", "")
-            name      = info.get("name", "")
             pos_col   = pos_color(fd["pos"])
 
-            # Stat boxes — built as list, no conditionals in f-string
-            stat_boxes = [
+            # Stat boxes as list — zero f-string conditionals
+            boxes = [
                 f'<div class="fh-stat-box"><div class="fh-stat-val">{fd["pts"]}</div><div class="fh-stat-lbl">PTS TODAY</div></div>',
                 f'<div class="fh-stat-box"><div class="fh-stat-val" style="color:{pc_champ};">P{champ_pos}</div><div class="fh-stat-lbl">CHAMP</div></div>',
                 f'<div class="fh-stat-box"><div class="fh-stat-val">{champ_pts}</div><div class="fh-stat-lbl">TOTAL PTS</div></div>',
             ]
             if isinstance(champ_pos, int) and champ_pos != 1 and driver_standings:
-                gap = driver_standings[0]["pts"] - champ_pts
-                stat_boxes.append(f'<div class="fh-stat-box"><div class="fh-stat-val" style="color:{ORANGE};">−{gap}</div><div class="fh-stat-lbl">GAP LEAD</div></div>')
+                boxes.append(f'<div class="fh-stat-box"><div class="fh-stat-val" style="color:{ORANGE};">−{driver_standings[0]["pts"]-champ_pts}</div><div class="fh-stat-lbl">GAP</div></div>')
             if fd.get("fl"):
-                stat_boxes.append('<div class="fh-stat-box"><div class="fh-stat-val" style="color:#A78BFA;">FL</div><div class="fh-stat-lbl">FASTEST</div></div>')
-            stats_html = "".join(stat_boxes)
+                boxes.append('<div class="fh-stat-box"><div class="fh-stat-val" style="color:#A78BFA;">FL</div><div class="fh-stat-lbl">FASTEST</div></div>')
+            stats_html = "".join(boxes)
 
-            # Telemetry — built as plain string, no nesting
+            # Telemetry inline
             t     = _telem.get(fd["code"], {})
             spd   = t.get("spd","—"); thr = t.get("thr","—")
             brk   = t.get("brk","—"); ger = t.get("ger","—")
-            comp  = t.get("compound","H"); lap = t.get("tyre_lap",0); mx = t.get("tyre_max",30)
-            tpct  = min(100, round(lap/mx*100))
+            comp  = t.get("compound","H")
+            tlap  = t.get("tyre_lap",0); tmx = t.get("tyre_max",30)
+            tpct  = min(100, round(tlap/tmx*100))
             bar_c = RED if tpct > 60 else ORANGE if tpct > 30 else GREEN
             tbg   = {"H":"#E0E0E0","M":"#FFD700","S":RED}.get(comp,"#888")
             tfg   = "#111" if comp in ("H","M") else "#fff"
@@ -994,9 +991,12 @@ def main():
 
             st.markdown(f"""
             <div class="ferrari-hero" style="margin-bottom:12px;">
-                <div class="fh-num">#{num}</div>
-                <div class="fh-driver">{flag} &nbsp; <span style="color:{pos_col};">P{fd["pos"]}</span> &nbsp;·&nbsp; FERRARI #{num}</div>
-                <div class="fh-name">{name}</div>
+                <div class="fh-num">#{info.get("num","")}</div>
+                <div class="fh-driver">{info.get("flag","")} &nbsp;
+                    <span style="color:{pos_col};">P{fd["pos"]}</span>
+                    &nbsp;·&nbsp; FERRARI #{info.get("num","")}
+                </div>
+                <div class="fh-name">{info.get("name","")}</div>
                 <div class="telem-grid">
                     <div class="t-box"><div class="t-lbl">SPD</div><div class="t-val t-spd">{spd}</div></div>
                     <div class="t-box"><div class="t-lbl">THR</div><div class="t-val t-thr">{thr}%</div></div>
@@ -1006,7 +1006,7 @@ def main():
                 <div class="tyre-row">
                     <div class="tyre-dot" style="background:{tbg};color:{tfg};">{comp}</div>
                     <div class="tyre-info">
-                        <div class="tyre-meta">{clbl} &nbsp;·&nbsp; LAP {lap}/~{mx}</div>
+                        <div class="tyre-meta">{clbl} &nbsp;·&nbsp; LAP {tlap}/~{tmx}</div>
                         <div class="tyre-bar-track">
                             <div class="tyre-bar-fill" style="width:{tpct}%;background:{bar_c};"></div>
                         </div>
